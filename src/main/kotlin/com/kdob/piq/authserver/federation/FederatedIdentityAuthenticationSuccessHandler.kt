@@ -46,7 +46,7 @@ class FederatedIdentityAuthenticationSuccessHandler(
                     email = email,
                     name = name,
                     provider = provider,
-                    providerId = user.name
+                    providerId = user!!.name
                 )
             }
         }

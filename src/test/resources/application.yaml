@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: auth-server-test
+  cloud:
+    config:
+      enabled: false
+  config:
+    import: "" # Disable config server import
+  datasource:
+    url: jdbc:h2:mem:auth_test;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: dummy-id
+            client-secret: dummy-secret
+            scope: openid,profile,email
+        provider:
+          google:
+            issuer-uri: https://accounts.google.com
+
+eureka:
+  client:
+    enabled: false
