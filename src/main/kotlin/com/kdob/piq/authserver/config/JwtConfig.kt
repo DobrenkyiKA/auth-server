@@ -7,41 +7,41 @@ import com.nimbusds.jose.jwk.source.JWKSource
 import com.nimbusds.jose.proc.SecurityContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration
 import org.springframework.security.oauth2.jwt.JwtDecoder
+import org.springframework.security.oauth2.jwt.JwtEncoder
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
 import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
-import java.util.UUID
+import java.util.*
 
 @Configuration
-class JwkConfig {
+class JwtConfig {
 
-    /**
-     * RSA key pair for signing JWTs.
-     *
-     * For MVP: generated on startup (tokens invalidated on restart).
-     * For production: load from a persistent key store or secrets manager.
-     */
+    private val keyPair: KeyPair = generateRsaKeyPair()
+
     @Bean
     fun jwkSource(): JWKSource<SecurityContext> {
-        val keyPair = generateRsaKeyPair()
-
         val rsaKey = RSAKey.Builder(keyPair.public as RSAPublicKey)
             .privateKey(keyPair.private as RSAPrivateKey)
             .keyID(UUID.randomUUID().toString())
             .build()
-
         return ImmutableJWKSet(JWKSet(rsaKey))
     }
 
     @Bean
-    fun jwtDecoder(jwkSource: JWKSource<SecurityContext>): JwtDecoder =
-        OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource)
+    fun jwtEncoder(jwkSource: JWKSource<SecurityContext>): JwtEncoder =
+        NimbusJwtEncoder(jwkSource)
 
-    private fun generateRsaKeyPair(): KeyPair =
-        KeyPairGenerator.getInstance("RSA").apply {
-            initialize(2048)
-        }.generateKeyPair()
+    @Bean
+    fun jwtDecoder(): JwtDecoder =
+        NimbusJwtDecoder.withPublicKey(keyPair.public as RSAPublicKey).build()
+
+    private fun generateRsaKeyPair(): KeyPair {
+        val generator = KeyPairGenerator.getInstance("RSA")
+        generator.initialize(2048)
+        return generator.generateKeyPair()
+    }
 }
