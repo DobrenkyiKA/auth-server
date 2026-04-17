@@ -30,20 +30,11 @@ class AuthController(
     @PostMapping("/login")
     fun login(@Valid @RequestBody request: LoginRequest): ResponseEntity<TokenResponse> {
         val user = authService.authenticate(request.email, request.password)
-        val accessToken = tokenService.generateAccessToken(user, issuerUri)
-        val refreshToken = tokenService.generateRefreshToken(user.id!!)
-
-        val cookie = ResponseCookie.from("refreshToken", refreshToken)
-            .httpOnly(true)
-            .secure(false)
-            .sameSite("Lax")
-            .path("/")
-            .maxAge(Duration.ofDays(14))
-            .build()
+        val loginResult = authService.createLoginResult(user)
 
         return ResponseEntity.ok()
-            .header(HttpHeaders.SET_COOKIE, cookie.toString())
-            .body(TokenResponse(accessToken))
+            .header(HttpHeaders.SET_COOKIE, loginResult.refreshTokenCookie.toString())
+            .body(TokenResponse(loginResult.accessToken))
     }
 
     @PostMapping("/refresh")

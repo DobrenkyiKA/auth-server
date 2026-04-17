@@ -28,3 +28,8 @@ spring:
 eureka:
   client:
     enabled: false
+
+app:
+  auth:
+    issuer-uri: http://localhost:8081
+    default-redirect-uri: http://localhost:3000
