@@ -18,7 +18,7 @@ class KafkaConfig(
     @Value("\${spring.kafka.bootstrap-servers:localhost:9092}")
     private val bootstrapServers: String,
 
-    @Value("\${app.kafka.topics.user.created")
+    @Value("\${app.kafka.topics.user.created}")
     private val userCreatedTopic: String
 ) {
     @Bean
