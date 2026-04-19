@@ -16,12 +16,14 @@ import org.springframework.kafka.support.serializer.JacksonJsonSerializer
 @Configuration
 class KafkaConfig(
     @Value("\${spring.kafka.bootstrap-servers:localhost:9092}")
-    private val bootstrapServers: String
-) {
+    private val bootstrapServers: String,
 
+    @Value("\${app.kafka.topics.user.created")
+    private val userCreatedTopic: String
+) {
     @Bean
     fun userCreatedTopic(): NewTopic =
-        TopicBuilder.name("user-created")
+        TopicBuilder.name(userCreatedTopic)
             .partitions(3)
             .replicas(1)
             .build()
@@ -31,7 +33,10 @@ class KafkaConfig(
         val props = mapOf(
             ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers,
             ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
-            ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to JacksonJsonSerializer::class.java
+            ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to JacksonJsonSerializer::class.java,
+            ProducerConfig.ACKS_CONFIG to "all",
+            ProducerConfig.RETRIES_CONFIG to 3,
+            ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG to true
         )
         return DefaultKafkaProducerFactory(props)
     }

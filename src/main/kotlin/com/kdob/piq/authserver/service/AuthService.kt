@@ -36,7 +36,7 @@ class AuthService(
 
         userEventPublisher.publishUserCreated(
             UserCreatedEvent(
-                userId = saved.id!!,
+                authId = saved.id!!,
                 email = saved.email,
                 roles = saved.roles.map { it.name }.toSet()
             )
@@ -89,7 +89,7 @@ class AuthService(
 
         userEventPublisher.publishUserCreated(
             UserCreatedEvent(
-                userId = savedUser.id!!,
+                authId = savedUser.id!!,
                 email = savedUser.email,
                 roles = savedUser.roles.map { it.name }.toSet()
             )
