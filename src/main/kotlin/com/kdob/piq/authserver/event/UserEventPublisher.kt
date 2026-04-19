@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 @Component
 class UserEventPublisher(
     private val kafkaTemplate: KafkaTemplate<String, UserCreatedEvent>,
-    @Value($$"${app.kafka.topic.user.created}") private val userCreatedTopic: String
+    @Value($$"${app.kafka.topics.user.created}") private val userCreatedTopic: String
 ) {
     private val logger = LoggerFactory.getLogger(UserEventPublisher::class.java)
 
