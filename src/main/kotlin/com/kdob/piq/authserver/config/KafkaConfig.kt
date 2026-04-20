@@ -1,6 +1,7 @@
 package com.kdob.piq.authserver.config
 
 import com.kdob.piq.authserver.event.UserCreatedEvent
+import org.apache.kafka.clients.admin.AdminClientConfig
 import org.apache.kafka.clients.admin.NewTopic
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.config.TopicBuilder
 import org.springframework.kafka.core.DefaultKafkaProducerFactory
+import org.springframework.kafka.core.KafkaAdmin
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.support.serializer.JacksonJsonSerializer
@@ -21,6 +23,15 @@ class KafkaConfig(
     @Value("\${app.kafka.topics.user.created}")
     private val userCreatedTopic: String
 ) {
+
+    @Bean
+    fun kafkaAdmin(): KafkaAdmin {
+        val configs = mapOf(
+            AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers
+        )
+        return KafkaAdmin(configs)
+    }
+
     @Bean
     fun userCreatedTopic(): NewTopic =
         TopicBuilder.name(userCreatedTopic)
